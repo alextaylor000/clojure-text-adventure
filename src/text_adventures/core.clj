@@ -25,7 +25,7 @@
 
 (defn valid-transition?
   [scene next-name]
-  (filter #(= next-name %) (get-in scene [:next]))) ; this could be `get` but I want to remember how to use `get-in`
+  (not (empty? (filter #(= next-name %) (get-in scene [:next]))))) ; this could be `get` but I want to remember how to use `get-in`
 
 (defn next-choices
   "Return the next possible scene names from `scene`."
@@ -67,10 +67,17 @@
 
 (defn prompt-scene
   ([] (prompt-scene :introduction))
-  ([cur-scene]
-    (present-scene cur-scene)
-    (let [input (keyword (get-input))]
-      (prompt-scene input))))
+  ([scene-name]
+    (present-scene scene-name)
+    (let [input (keyword (get-input))
+          scene (get scenes scene-name)]
+      (if (valid-transition? scene input)
+        (do
+          (println (str "You chose " input))
+          (prompt-scene input))
+        (do
+          (println "Invalid choice")
+          (prompt-scene scene-name))))))
 
 (defn -main
   [& args]
