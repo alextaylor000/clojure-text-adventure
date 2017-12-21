@@ -1,12 +1,6 @@
 (ns text-adventures.core
   (:gen-class))
 
-(def scenes
-  { :introduction { :next [:door-1 :door-2] :text "You see two doors. Which do you choose?" }
-    :door-1 { :next [] :text "You're dead!" }
-    :door-2 { :next [] :text "You're alive!" }
-   }
-)
 ; a scene:
 ;   - has a name;
 ;   - has text;
@@ -16,13 +10,22 @@
 ; the user makes a choice;
 ; the scene list is searched for a scene with the name of `choice`;
 ; that scene is presented.
+(def scenes
+  { :introduction { :next [:door-1 :door-2] :text "You see two doors. Which do you choose?" }
+    :door-1 { :next [] :text "You're dead!" }
+    :door-2 { :next [] :text "You're alive!" }
+   }
+)
 
-; TODO: when should one use `nil` in Clojure, vs. an empty collection? Is it common to raise exceptions?
+; TODO: when should one use `nil` in Clojure, vs. an empty collection? Is it common
+; to raise exceptions?
 (defn get-scene
   "Gets a scene `name` from `scenes`"
   [scenes name]
   (get scenes name))
 
+; TODO: is there a more elegant way to do this? I want to return a boolean here;
+; I have to check for "not empty" right now. is there a shortcut?
 (defn valid-transition?
   [scene next-name]
   (not (empty? (filter #(= next-name %) (get-in scene [:next]))))) ; this could be `get` but I want to remember how to use `get-in`
