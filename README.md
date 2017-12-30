@@ -16,14 +16,12 @@ Each key represents the name of a scene. `introduction` is a required scene.
 Within each scene, the key `:next` defines a vector of choices to move forward from that scene. The `:text` field contains the text of the scene itself.
 
 ## Future
-- [ ] Parse a YML document to load stories.
+- [x] Parse a YML document to load stories.
+- [ ] Handle failure when the user doesn't pass a filename
+- [ ] Gracefully exit when the story is complete
 - [ ] Make the `next` data structure richer to allow sentences
 
 ## Usage
 
-    $ lein run
-
-or...
-
-    $ java -jar text-adventures-0.1.0-standalone.jar [args]
+    $ lein run ./example.yml
 

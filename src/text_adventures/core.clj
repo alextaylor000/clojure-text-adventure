@@ -1,21 +1,6 @@
 (ns text-adventures.core
-  (:gen-class))
-
-; a scene:
-;   - has a name;
-;   - has text;
-;   - has a vector of choices (next)
-;
-; the scene named `first` is presented;
-; the user makes a choice;
-; the scene list is searched for a scene with the name of `choice`;
-; that scene is presented.
-(def scenes
-  { :introduction { :next [:door-1 :door-2] :text "You see two doors. Which do you choose?" }
-    :door-1 { :next [] :text "You're dead!" }
-    :door-2 { :next [] :text "You're alive!" }
-   }
-)
+  (:gen-class)
+  (:require [yaml.core :as yaml]))
 
 ; TODO: when should one use `nil` in Clojure, vs. an empty collection? Is it common
 ; to raise exceptions?
@@ -52,8 +37,8 @@
   (println ""))
 
 (defn present-scene
-  [scene-name]
-  (let [scene (get-scene scenes scene-name)]
+  [scenes scene-name]
+  (let [scene (get-scene scenes (keyword scene-name))]
     (println (get scene :text))
     (println "")
     (present-choices scene)))
@@ -69,21 +54,27 @@
          (clojure.string/lower-case input)))))
 
 (defn prompt-scene
-  ([] (prompt-scene :introduction))
-  ([scene-name]
-    (present-scene scene-name)
-    (let [input (keyword (get-input))
+  ([scenes] (prompt-scene scenes :introduction))
+  ([scenes scene-name]
+    (present-scene scenes scene-name)
+    (let [input (get-input)
           scene (get scenes scene-name)]
       (if (valid-transition? scene input)
         (do
           (println (str "You chose " input))
-          (prompt-scene input))
+          (prompt-scene scenes input))
         (do
-          (println "Invalid choice")
-          (prompt-scene scene-name))))))
+          (println (str "Invalid choice: " input))
+          (prompt-scene scenes scene-name))))))
+
+(defn load-scenes-from-yaml
+  [file]
+  (get (yaml/from-file file true) :scenes)) ; `true` keywordizes the YAML keys
 
 (defn -main
   [& args]
-  (println "hi")
-  (prompt-scene))
+  ; TODO: we pass `scenes` through most of the functions from here on out. I *think*
+  ; this is idiomatic because we're not relying on any global variables, but I
+  ; wonder if there's a better way to do something like this?
+  (prompt-scene (load-scenes-from-yaml (first args))))
 

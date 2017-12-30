@@ -1,0 +1,16 @@
+scenes:
+  introduction:
+    next:
+      - door-1
+      - door-2
+    text:
+      |
+      Welcome to the adventure! This is an example.
+
+      You are in a room with two doors. Which do you choose?
+  door-1:
+    next: []
+    text: "You're dead"
+  door-2:
+    next: []
+    text: "You're alive"
